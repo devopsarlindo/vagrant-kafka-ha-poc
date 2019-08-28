@@ -6,6 +6,6 @@
   tasks:
     - include_role:
         name: kafka
-        tasks_from: dcfailover.yml
+        tasks_from: ddcfailoverandrestore.yml
       vars:
         ansible_zookeeper_failover_to_dc2: true
