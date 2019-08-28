@@ -1,0 +1,30 @@
+---
+- name: Install Java 1.8 and some basic dependencies
+  yum: name="unzip,java-1.8.0-openjdk" state=present
+
+- name: ensure app dir exists
+  file:
+    path: "/app"
+    state: directory
+    owner: "vagrant"
+    group: "vagrant"
+
+- name: Install apache ignite
+  copy:
+    src: "files/apache-ignite-2.3.0-src.zip"
+    dest: "/tmp/"
+  
+- name: Extract archive
+  command: chdir=/app unzip /tmp/apache-ignite-2.3.0-src.zip creates=/app/apache-ignite-2.3.0-src
+
+- name: create symlink to kafka
+  file:
+    src: /app/apache-ignite-2.3.0-src
+    dest: /app/apache-ignite
+    owner: vagrant
+    group: vagrant
+    state: link
+    
+- name: Change ownership of kafka installation
+  file: path=/app/apache-ignite/ owner=vagrant group=vagrant state=directory recurse=yes
+

@@ -1,0 +1,6 @@
+---
+- name: restart zookeeper
+  service: name=zookeeper enabled=yes state=restarted
+
+- name: restart kafka
+  service: name=kafka enabled=yes state=restarted

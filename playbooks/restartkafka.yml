@@ -1,0 +1,9 @@
+---
+- hosts: kafka_servers
+  gather_facts: yes
+  become: yes
+  become_method: sudo
+  tasks:
+    - include_role:
+        name: kafka
+        tasks_from: restart.yml

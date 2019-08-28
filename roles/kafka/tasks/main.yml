@@ -1,0 +1,78 @@
+---
+- name: Install Java 1.8 and some basic dependencies
+  yum: name="unzip,java-1.8.0-openjdk,nc" state=present
+
+- name: ensure app dir exists
+  file:
+    path: "/app"
+    state: directory
+    owner: "vagrant"
+    group: "vagrant"
+
+- name: Install Kafka
+  copy:
+    src: "files/kafka_2.11-1.0.0.tar"
+    dest: "/tmp/"
+  
+- name: Extract archive
+  command: chdir=/app tar -xvf /tmp/kafka_2.11-1.0.0.tar creates=/app/kafka_2.11-1.0.0
+
+- name: create symlink to kafka
+  file:
+    src: /app/kafka_2.11-1.0.0
+    dest: /app/kafka
+    owner: vagrant
+    group: vagrant
+    state: link
+    
+- name: Change ownership of kafka installation
+  file: path=/app/kafka/ owner=vagrant group=vagrant state=directory recurse=yes
+
+- name: update and copy over zookeeper systemd service conf
+  template:
+    src: zookeeper.service
+    dest: "/etc/systemd/system/zookeeper.service"
+
+- name: update and copy over kafka systemd service conf
+  template:
+    src: kafka.service
+    dest: "/etc/systemd/system/kafka.service"
+
+- name: force systemd reload
+  systemd:
+    daemon_reload: yes
+    
+- name: update zookeeper conf
+  template:
+    src: zookeeper.properties
+    dest: "/app/kafka/config/zookeeper.properties"
+    owner: "vagrant"
+    group: "vagrant"
+
+- name: update kakfa conf
+  template:
+    src: server.properties
+    dest: "/app/kafka/config/server.properties"
+    owner: "vagrant"
+    group: "vagrant"
+
+- name: ensure zookeeper data dir exists
+  file:
+    path: "/tmp/zookeeper"
+    state: directory
+    owner: "vagrant"
+    group: "vagrant"
+
+- name: update zookeeper myid node
+  template:
+    src: myid
+    dest: "/tmp/zookeeper/myid"
+    owner: "vagrant"
+    group: "vagrant"
+
+- name: start zookeeper
+  service: name=zookeeper enabled=yes state=started
+
+- name: start kafka
+  service: name=kafka enabled=yes state=started
+

@@ -1,0 +1,24 @@
+---
+- name: check kafka brokers
+  command: chdir=/app/kafka/bin ./zookeeper-shell.sh {{ groups['kafka_servers'][0] }}:2181 ls /brokers/ids
+  register: output
+
+- name: H01 - assert kafka cluster is ok
+  assert:
+    that:
+        - "'[1, 2, 3, 4, 5, 6]' in output.stdout_lines"
+
+- name: create a kafka topic
+  command: chdir=/app/kafka/bin ./zookeeper-shell.sh {{ groups['kafka_servers'][0] }}:2181 ls /brokers/ids
+  register: output
+
+#./kafka-topics.sh --delete --zookeeper 192.168.33.60:2181,192.168.33.61:2181,192.168.33.62:2181,192.168.33.63:2181,192.168.33.64:2181,192.168.33.65:2181 --topic test
+#./kafka-topics.sh --create --zookeeper 192.168.33.60:2181,192.168.33.61:2181,192.168.33.62:2181,192.168.33.63:2181,192.168.33.64:2181,192.168.33.65:2181 --replication-factor 5 --partitions 1 --topic test
+
+#./kafka-topics.sh --describe --topic test --zookeeper 192.168.33.60:2181
+
+#./kafka-console-producer.sh --broker-list 192.168.33.60:9092,192.168.33.61:9092,192.168.33.62:9092,192.168.33.63:9092,192.168.33.64:9092,192.168.33.65:9092 --request-required-acks all --topic test
+
+# run this command from all servers
+#./kafka-console-consumer.sh --bootstrap-server 192.168.33.60:9092,192.168.33.61:9092,192.168.33.62:9092,192.168.33.63:9092,192.168.33.64:9092,192.168.33.65:9092 --topic test --from-beginning
+#string to look for "Processed a total of 1 messages"
