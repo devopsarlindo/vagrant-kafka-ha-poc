@@ -61,3 +61,12 @@
         name: kafka
         tasks_from: H25.yml
       run_once: true
+    - include_role:
+        name: kafka
+        tasks_from: dcfailoverandrestore.yml
+      vars:
+        ansible_zookeeper_failover_to_dc2: true
+    - include_role:
+        name: kafka
+        tasks_from: H25.yml
+      run_once: true
