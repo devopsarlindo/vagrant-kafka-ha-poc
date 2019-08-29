@@ -39,4 +39,4 @@
   assert:
     that:
         - "'testmsg' in output.stdout_lines"
-  when: not output.failed 
+  ignore_errors: true
