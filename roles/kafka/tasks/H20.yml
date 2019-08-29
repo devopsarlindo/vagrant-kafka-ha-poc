@@ -1,11 +1,10 @@
 ---
 - name: kill two zookeeper server in group1 dc1
   service: name=zookeeper enabled=yes state=stopped
-  delegate_to: "{{ groups['kafka_servers_dc1'][0] }}"
-
-- name: kill two zookeeper server in group1 dc1
-  service: name=zookeeper enabled=yes state=stopped
-  delegate_to: "{{ groups['kafka_servers_dc1'][1] }}"
+  delegate_to: "{{ item }}"
+  with_items:
+    - "{{ groups['kafka_servers_dc1'][0] }}"
+    - "{{ groups['kafka_servers_dc1'][1] }}"
 
 - name: publish a test message to the kafka test topic
   shell: chdir=/app/kafka/bin echo "testmsg" | ./kafka-console-producer.sh --broker-list {{ groups['kafka_servers'][0] }}:9092,{{ groups['kafka_servers'][1] }}:9092,{{ groups['kafka_servers'][2] }}:9092,{{ groups['kafka_servers'][3] }}:9092,{{ groups['kafka_servers'][4] }}:9092,{{ groups['kafka_servers'][5] }}:9092 --request-required-acks all --topic test

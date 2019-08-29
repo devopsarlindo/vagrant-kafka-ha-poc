@@ -1,0 +1,21 @@
+---
+- hosts: kafka_servers
+  gather_facts: yes
+  become: yes
+  become_method: sudo
+  # pre_tasks:
+  #   - include_role:
+  #       name: kafka
+  #       tasks_from: dcfailoverandrestore.yml
+  tasks:
+    - include_role:
+        name: kafka
+        tasks_from: dcfailoverandrestore.yml
+    - include_role:
+        name: kafka
+        tasks_from: delete_create_test_topic.yml
+      run_once: true
+    - include_role:
+        name: kafka
+        tasks_from: H25.yml
+      run_once: true
