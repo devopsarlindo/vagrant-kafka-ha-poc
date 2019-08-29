@@ -1,0 +1,15 @@
+---
+- name: check kafka brokers
+  command: chdir=/app/kafka/bin ./zookeeper-shell.sh {{ groups['kafka_servers'][0] }}:2181 ls /brokers/ids
+  register: output
+  until: "'[1, 2, 3, 4, 5, 6]' in output.stdout_lines"
+  retries: 3
+  delay: 10
+
+- debug:
+    var: output
+
+- name: H01 - assert kafka cluster is ok
+  assert:
+    that:
+        - "'[1, 2, 3, 4, 5, 6]' in output.stdout_lines"

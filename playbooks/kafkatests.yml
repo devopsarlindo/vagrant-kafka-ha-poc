@@ -3,12 +3,61 @@
   gather_facts: yes
   become: yes
   become_method: sudo
-  # pre_tasks:
-  #   - include_role:
-  #       name: kafka
-  #       tasks_from: dcfailoverandrestore.yml
+  pre_tasks:
+    - include_role:
+        name: kafka
+        tasks_from: dcfailoverandrestore.yml
   tasks:
     - include_role:
         name: kafka
-        tasks_from: tests.yml
+        tasks_from: H01.yml
+      run_once: true
+    - include_role:
+        name: kafka
+        tasks_from: delete_create_test_topic.yml
+      run_once: true
+    - include_role:
+        name: kafka
+        tasks_from: H05.yml
+      run_once: true
+    - include_role:
+        name: kafka
+        tasks_from: delete_create_test_topic.yml
+      run_once: true
+    - include_role:
+        name: kafka
+        tasks_from: H10.yml
+      run_once: true
+    - include_role:
+        name: kafka
+        tasks_from: dcfailoverandrestore.yml
+    - include_role:
+        name: kafka
+        tasks_from: delete_create_test_topic.yml
+      run_once: true
+    - include_role:
+        name: kafka
+        tasks_from: H15.yml
+      run_once: true
+    - include_role:
+        name: kafka
+        tasks_from: dcfailoverandrestore.yml
+    - include_role:
+        name: kafka
+        tasks_from: delete_create_test_topic.yml
+      run_once: true
+    - include_role:
+        name: kafka
+        tasks_from: H20.yml
+      run_once: true
+    - include_role:
+        name: kafka
+        tasks_from: dcfailoverandrestore.yml
+    - include_role:
+        name: kafka
+        tasks_from: delete_create_test_topic.yml
+      run_once: true
+    - include_role:
+        name: kafka
+        tasks_from: H25.yml
       run_once: true

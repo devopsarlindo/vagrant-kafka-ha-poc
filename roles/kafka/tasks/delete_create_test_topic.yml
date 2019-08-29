@@ -1,0 +1,15 @@
+---
+- name: delete kafka test topic
+  command: chdir=/app/kafka/bin ./kafka-topics.sh --delete --zookeeper {{ groups['kafka_servers'][0] }}:2181,{{ groups['kafka_servers'][1] }}:2181,{{ groups['kafka_servers'][2] }}:2181,{{ groups['kafka_servers'][3] }}:2181,{{ groups['kafka_servers'][4] }}:2181,{{ groups['kafka_servers'][5] }}:2181 --topic test
+  register: output
+  failed_when: "' does not exist ' not in output.stderr and output.rc != 0"
+
+- debug:
+    var: output
+
+- name: create kafka test topic replication factor 5, partition 1
+  command: chdir=/app/kafka/bin ./kafka-topics.sh --create --zookeeper {{ groups['kafka_servers'][0] }}:2181,{{ groups['kafka_servers'][1] }}:2181,{{ groups['kafka_servers'][2] }}:2181,{{ groups['kafka_servers'][3] }}:2181,{{ groups['kafka_servers'][4] }}:2181,{{ groups['kafka_servers'][5] }}:2181 --replication-factor 5 --partitions 1 --topic test
+  register: output
+
+- debug:
+    var: output

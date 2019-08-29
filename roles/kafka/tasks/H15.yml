@@ -1,0 +1,25 @@
+---
+- name: kill one zookeeper server in group2 dc2
+  service: name=zookeeper enabled=yes state=stopped
+  delegate_to: "{{ groups['kafka_servers_dc2'][0] }}"
+
+- name: publish a test message to the kafka test topic
+  shell: chdir=/app/kafka/bin echo "testmsg" | ./kafka-console-producer.sh --broker-list {{ groups['kafka_servers'][0] }}:9092,{{ groups['kafka_servers'][1] }}:9092,{{ groups['kafka_servers'][2] }}:9092,{{ groups['kafka_servers'][3] }}:9092,{{ groups['kafka_servers'][4] }}:9092,{{ groups['kafka_servers'][5] }}:9092 --request-required-acks all --topic test
+  register: output
+  delegate_to: "{{ groups['kafka_servers_dc1'][0] }}"
+
+- debug:
+    var: output
+
+- name: consume test message from kafka test topic on group 1 servers
+  command: chdir=/app/kafka/bin ./kafka-console-consumer.sh --bootstrap-server {{ groups['kafka_servers'][0] }}:9092,{{ groups['kafka_servers'][1] }}:9092,{{ groups['kafka_servers'][2] }}:9092,{{ groups['kafka_servers'][3] }}:9092,{{ groups['kafka_servers'][4] }}:9092,{{ groups['kafka_servers'][5] }}:9092 --topic test --from-beginning -timeout-ms 5000
+  register: output
+  delegate_to: "{{ groups['kafka_servers_dc1'][0] }}"
+
+- debug:
+    var: output
+
+- name: H15 - assert kafka data replication is ok from a server in dc1 group
+  assert:
+    that:
+        - "'testmsg' in output.stdout_lines"
